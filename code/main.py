@@ -1,3 +1,4 @@
+from _typeshed import StrOrBytesPath
 import pandas as pd
 import numpy as np
 from correlation import pearson, spearman, kendall
@@ -22,13 +23,17 @@ def generate_scores(fileName):
     df = pd.read_csv(filePath)
     df = df.dropna()
 
-    stressScores = df[list(df)[9:]].apply(scoreData)
-    avgStepCount = df[list(df)[1:7]]
+    try:
+        stressScores = df[list(df)[9:]].apply(scoreData)
+        avgStepCount = df[list(df)[1:7]]
 
-    stressScores = stressScores.sum(axis=1)
-    avgStepCount = avgStepCount.sum(axis=1)
+        stressScores = stressScores.sum(axis=1)
+        avgStepCount = avgStepCount.sum(axis=1)
 
-    return stressScores, avgStepCount
+        return stressScores, avgStepCount
+    except:
+        print("Files could not be opened")
+        return None, None
 
 
 
@@ -36,5 +41,8 @@ if __name__ == "__main__":
     # fileName = input("Please enter the file name > ")
     fileName = "psych_responses.csv"
     stressScores, avgStepCount = generate_scores(fileName)
-    pearson, spearman, kendall = get_correlations(stressScores, avgStepCount)
-    print(pearson, spearman, kendall)
+    if stressScores is not None and avgStepCount is not None:
+        pearson, spearman, kendall = get_correlations(stressScores, avgStepCount)
+        print(pearson, spearman, kendall)
+    else:
+        print("Scores could not be calculated. File opening error")
