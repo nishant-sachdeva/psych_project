@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from correlation import pearson, spearman, kendall
 
 scoreDict = {
     'Not At All' : 1,
@@ -11,27 +12,22 @@ def scoreData(x):
     return x.apply(lambda x: scoreDict[x])
 
 def get_correlations(stressScores, avgStepCount):
-    pass
-
-def get_stress_score(stressColmns):
-    pass
-
-def get_step_count(stepColmns):
-    pass
+    pearsonScore = pearson(stressScores.values.tolist(), avgStepCount.values.tolist())
+    spearmanScore = spearman(stressScores.values.tolist(), avgStepCount.values.tolist())
+    kendallScore = kendall(stressScores.values.tolist(), avgStepCount.values.tolist())
+    return [pearsonScore, spearmanScore, kendallScore]
 
 def generate_scores(fileName):
-    # read the file
     filePath = "../data/" + fileName
     df = pd.read_csv(filePath)
     df = df.dropna()
-    # get the required colmns
-    stressScores = df[list(df)[9:]].apply(scoreData)
-    avgStepCount = df[list(df)[1:8]]
 
-    for stressRow, stepRow in zip(stressScores.iterrows(), avgStepCount.iterrows()):
-        stressScores.append(get_stress_score(stressRow))
-        avgStepCount.append(get_step_count(stepRow))
-    
+    stressScores = df[list(df)[9:]].apply(scoreData)
+    avgStepCount = df[list(df)[1:7]]
+
+    stressScores = stressScores.sum(axis=1)
+    avgStepCount = avgStepCount.sum(axis=1)
+
     return stressScores, avgStepCount
 
 
@@ -40,4 +36,5 @@ if __name__ == "__main__":
     # fileName = input("Please enter the file name > ")
     fileName = "psych_responses.csv"
     stressScores, avgStepCount = generate_scores(fileName)
-    get_correlations(stressScores, avgStepCount)
+    pearson, spearman, kendall = get_correlations(stressScores, avgStepCount)
+    print(pearson, spearman, kendall)
