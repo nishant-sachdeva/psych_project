@@ -25,6 +25,8 @@ def generate_scores(fileName):
         df = pd.read_csv(filePath)
         df = df.dropna()
 
+        print(df['Age'].mean())
+
         stressScores = df[list(df)[9:]].apply(scoreData)
         avgStepCount = df[list(df)[1:7]]
 
@@ -42,6 +44,7 @@ if __name__ == "__main__":
     # fileName = input("Please enter the file name > ")
     fileName = "psych_responses.csv"
     stressScores, avgStepCount = generate_scores(fileName)
+    print(stressScores.mean())
     corrPlot = pd.concat([stressScores, avgStepCount], join='outer', axis=1)
     corrPlot.to_csv("../data/averageScores.csv", sep=',')
     print(list(corrPlot))
